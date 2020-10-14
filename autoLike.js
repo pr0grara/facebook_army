@@ -118,9 +118,9 @@ try {
         await page.waitFor(1000);
         console.log("BINGO");
         try {
-          var like = await comment.$$('div[aria-label="Like"]');
-          if (like.length === 0) like = await comment.$$('a[aria-label="Like"]')
-          if (like.length > 0) { //make sure the node exists (aka we haven't already liked)
+          var like = await comment.$$('div[aria-label="Like"]'); //it can be a div
+          if (like.length === 0) like = await comment.$$('a[aria-label="Like"]') //or a link
+          if (like.length > 0) { //make sure the node exists (aka we haven't already liked comment)
             console.log("!");
             await like[0].click();
             await page.waitFor(1000);
