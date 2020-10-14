@@ -45,9 +45,7 @@ try {
 
     //NAVIGATE TO POST AND OPEN COMMENTS
     await page.waitFor(2000);
-    await page.goto(
-      "https://www.facebook.com/vicenews/videos/645374249683558/"
-    );
+    await page.goto("https://www.facebook.com/watch/?v=401016897697280");
     await page.waitFor(2000);
     await page.keyboard.press("Escape");
     try {
@@ -59,7 +57,7 @@ try {
 
     //CLICK 'See More Comments' i TIMES
     var seeMoreComments;
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 10; i++) {
       //iterates over entire post i times
       seeMoreComments = await page.$$(
         'span[class="j83agx80 fv0vnmcu hpfvmrgz"]'
@@ -92,6 +90,7 @@ try {
         if (buttonsJSON[k] === "See More") {
           try {
             await buttons[k].click();
+            await page.waitFor(300);
           } catch {
             console.log("Expanding Comments Error");
           }
@@ -102,6 +101,7 @@ try {
 
     //LIKE ALL COMMENTS WITH OUR #
     j = 0; //reset comment counter
+    var likedCount = 0;
     while (comments.length > j) {
       console.log(j);
       console.log(comments.length);
@@ -109,27 +109,31 @@ try {
       const elementText = await comment.getProperty("innerText");
       const innerText = await elementText.jsonValue();
       const textArr = innerText.split(" ");
-      console.log(textArr);
+      // console.log(textArr);
+      const regex = new RegExp('#recognizeartsakh', 'gi');
 
       if (
-        textArr.some((word) => word.toLowerCase() === "#dontbelievearmenia") //hashtag to like
+        textArr.some((word) => !!word.match(regex)) 
       ) {
-        console.log("BINGO");
         await page.waitFor(1000);
+        console.log("BINGO");
         try {
-          const like = await comment.$$('div[aria-label="Like"]');
-          if (like.length > 0) {
-            //make sure the node exists (aka we haven't already liked)
+          var like = await comment.$$('div[aria-label="Like"]');
+          if (like.length === 0) like = await comment.$$('a[aria-label="Like"]')
+          if (like.length > 0) { //make sure the node exists (aka we haven't already liked)
+            console.log("!");
             await like[0].click();
+            await page.waitFor(1000);
+            likedCount++;
           }
         } catch (e) {
-          console.log("Liking error");
+          console.log(e);
         }
       }
       console.log("---");
       j++;
     }
-    console.log("finished liking");
+    console.log(`finished liking ${likedCount + (likedCount === 1 ? ' comment' : ' comments')}`);
   })();
 } catch (e) {
   console.log(e);
