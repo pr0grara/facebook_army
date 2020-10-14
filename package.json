@@ -1,0 +1,15 @@
+{
+  "name": "facebook-army",
+  "type": "commonjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "autoLike.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adam Melks",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^3.0.0"
+  }
+}
