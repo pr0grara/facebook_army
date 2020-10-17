@@ -1,9 +1,10 @@
 const users = {
-  0: { username: "demo@user.com", password: "123456" }, //enter credentials here
-  1: { username: "demo@user.com", password: "123456" }, //every account added to this object will be run through program
+  0: { username: "demo@user.com", password: "123456" }, //input credentials here
+  1: { username: "demo@user.com", password: "123456" }, //every account added to this object will be run
 };
 
-const targetUrl = 'https://www.facebook.com/watch/?v=257467945464976&external_log_id=a60e280e-1708-4a4f-96ec-841d329d6426&q=kitten'; //input url of target post here
+
+const targetUrl = 'https://www.facebook.com/watch/?ref=search&v=257467945464976&external_log_id=1deb1a71-6fce-40c2-af62-4d257f1659b4&q=kittens'; //input url of target post here
 
 //after completing above inputs you may now run autoLike.js 
 
@@ -24,6 +25,7 @@ const trickTrapsPro = [
   new RegExp("stop erdog", "gi"),
   new RegExp("stop turkey", "gi"),
   new RegExp("ancestral homeland", "gi"),
+  new RegExp("i stand with arm", "gi"),
 ];
 
 const trickTrapsCon = [
@@ -116,7 +118,7 @@ try {
   
       //NAVIGATE TO TARGET POST AND OPEN COMMENTS
       await page.waitFor(6000);
-      await page.goto(targetUrl);
+      await page.goto(targetUrl, {waitUntil: 'load', timeout: 0});
       await page.waitFor(2000);
       await page.keyboard.press("Escape");
       try {
@@ -129,7 +131,28 @@ try {
   
       //CLICK 'See More Comments' i TIMES
       var seeMoreComments;
-      const posts = await page.$$('div[class="l9j0dhe7 tkr6xdv7 buofh1pr eg9m0zos"]')
+      
+      const commentSpecifierBar = await page.$$('div[class="l6v480f0 pfnyh3mw kvgmc6g5 wkznzc2l oygrvhab dhix69tm j83agx80 bkfpd7mw"]');
+      const commentSpecifier = await commentSpecifierBar[0].$$('div[role="button"]');
+      const specifierProperty = await commentSpecifier[1].getProperty('innerText')
+      const specifierValue = await specifierProperty.jsonValue();
+      const oldest = new RegExp('oldest', 'gi')
+      var options = false;
+
+      if (specifierValue.match(oldest)) { //if comments are set to "Oldest" we must change them to "All Comments"
+        await commentSpecifier[1].click()
+        await page.waitFor(1000);
+        const dropDown = await page.$$('div[data-testid="Keycommand_wrapper_ModalLayer"]');
+        if (dropDown[1]) {
+          options = await dropDown[1].$$('div[role="menuitem"]');
+        }
+        if (options) {
+          options[2].click();
+          await page.waitFor(1000);
+        }
+      }
+
+      const posts = await page.$$('div[class="l9j0dhe7 tkr6xdv7 buofh1pr eg9m0zos"]');
       
       for (let i = 0; i < 20; i++) { //iterates over entire post i times
         seeMoreComments = await posts[0].$$('div[role="button"]'); //grabs buttons from first post
@@ -173,7 +196,7 @@ try {
       var likedCount = 0;
 
       while (comments.length > j) {
-        console.log(`${j}/${comments.length}`);
+        console.log(`${j + 1}/${comments.length}`);
         const comment = comments[j];
         const elementText = await comment.getProperty("innerText");
         const innerText = await elementText.jsonValue();
