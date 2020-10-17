@@ -3,7 +3,7 @@ const users = {
   1: { username: "demo@user.com", password: "123456" }, //every account added to this object will be run through program
 };
 
-const targetUrl = ''; //input url of target post here
+const targetUrl = 'https://www.facebook.com/watch/?v=257467945464976&external_log_id=a60e280e-1708-4a4f-96ec-841d329d6426&q=kitten'; //input url of target post here
 
 //after completing above inputs you may now run autoLike.js 
 
@@ -68,6 +68,7 @@ const trickerTraper = (com) => {
 };
 
 const nameCheck = (name) => {
+  if (!name) return false;
   lastThree = name.slice(name.length - 3);
   if (lastThree === "ian" || lastThree === "yan") return true;
 };
@@ -77,7 +78,6 @@ const isProArmenian = (com) => {
   //we look at 1.flags 2.hashtags 3.phraseology and 4.commentors last name
   //if at any one of these stops we determine the comment is proArmenian we return true and the comment is liked
   var lastName = com.split('\n')[0].split(' ')[1];
-  console.log(lastName);
   if (flagCheck(com) > 0) return true;
   if (containsHash(com)) return true;
   if (trickerTraper(com)) return true; //here sum magic ;)
